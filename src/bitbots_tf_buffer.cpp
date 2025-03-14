@@ -77,6 +77,29 @@ class Buffer {
     // Convert C++ object back to python object
     return ros2_python_extension::toPython<geometry_msgs::msg::TransformStamped>(transform);
   }
+    py::bytes lookup_transform_full(
+      py::str target_frame,
+      py::bytes target_time_raw,
+      py::str source_frame,
+      py::bytes source_time_raw,
+      py::str fixed_frame,
+      py::bytes timeout_raw) {
+
+    // Convert Python objects to C++ objects
+    const std::string target_frame_str = target_frame.cast<std::string>();
+    const std::string source_frame_str = source_frame.cast<std::string>();
+    const std::string fixed_frame_str = fixed_frame.cast<std::string>();
+    const rclcpp::Time target_time{ros2_python_extension::fromPython<builtin_interfaces::msg::Time>(target_time_raw)};
+    const rclcpp::Time source_time{ros2_python_extension::fromPython<builtin_interfaces::msg::Time>(source_time_raw)};
+    const rclcpp::Duration timeout{ros2_python_extension::fromPython<builtin_interfaces::msg::Duration>(timeout_raw)};
+
+    // Lookup transform using the advanced API
+    auto transform = buffer_->lookupTransform(target_frame_str, target_time, source_frame_str, source_time, fixed_frame_str, timeout);
+
+    // Convert C++ object back to Python object
+    return ros2_python_extension::toPython<geometry_msgs::msg::TransformStamped>(transform);
+  }
+
 
   bool can_transform(py::str target_frame, py::str source_frame, py::bytes time_raw, py::bytes timeout_raw) {
     // Convert python objects to C++ objects
@@ -111,5 +134,6 @@ PYBIND11_MODULE(cpp_wrapper, m) {
   py::class_<Buffer, std::shared_ptr<Buffer>>(m, "Buffer")
       .def(py::init<py::bytes, py::object>())
       .def("lookup_transform", &Buffer::lookup_transform)
+      .def("lookup_transform_full", &Buffer::lookup_transform_full)
       .def("can_transform", &Buffer::can_transform);
 }
