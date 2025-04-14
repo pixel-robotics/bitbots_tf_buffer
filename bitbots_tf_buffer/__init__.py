@@ -57,7 +57,7 @@ class Buffer(tf2.BufferCore, tf2.BufferInterface):
             serialize_message(target_time if isinstance(target_time, TimeMsg) else Time.to_msg(target_time)),
             source_frame,
             serialize_message(source_time if isinstance(source_time, TimeMsg) else Time.to_msg(source_time)),
-            fixed_frame: str,
+            fixed_frame,
             serialize_message(timeout if isinstance(timeout, DurationMsg) else Duration.to_msg(timeout)),
         )
         return deserialize_message(transform_str, TransformStamped)
