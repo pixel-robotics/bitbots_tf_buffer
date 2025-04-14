@@ -33,7 +33,7 @@ class Buffer(tf2.BufferCore, tf2.BufferInterface):
         # Handle timeout as None
         timeout = timeout or Duration()
         # Call cpp implementation
-        transform_str = self._impl.lookup_transform_full(
+        transform_str = self._impl.lookup_transform(
             target_frame,
             source_frame,
             serialize_message(time if isinstance(time, TimeMsg) else Time.to_msg(time)),
@@ -52,7 +52,7 @@ class Buffer(tf2.BufferCore, tf2.BufferInterface):
         # Handle timeout as None
         timeout = timeout or Duration()
         # Call cpp implementation
-        transform_str = self._impl.lookup_transform(
+        transform_str = self._impl.lookup_transform_full(
             target_frame,
             serialize_message(target_time if isinstance(target_time, TimeMsg) else Time.to_msg(target_time)),
             source_frame,
