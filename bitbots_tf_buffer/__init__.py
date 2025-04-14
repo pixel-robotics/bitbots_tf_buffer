@@ -33,10 +33,31 @@ class Buffer(tf2.BufferCore, tf2.BufferInterface):
         # Handle timeout as None
         timeout = timeout or Duration()
         # Call cpp implementation
-        transform_str = self._impl.lookup_transform(
+        transform_str = self._impl.lookup_transform_full(
             target_frame,
             source_frame,
             serialize_message(time if isinstance(time, TimeMsg) else Time.to_msg(time)),
+            serialize_message(timeout if isinstance(timeout, DurationMsg) else Duration.to_msg(timeout)),
+        )
+        return deserialize_message(transform_str, TransformStamped)
+
+    def lookup_transform_full(
+        self, target_frame: str,
+        target_time: Time,
+        source_frame: str,
+        source_time: Time,
+        fixed_frame: str,
+        timeout: Optional[Duration | DurationMsg] = None
+    ) -> TransformStamped:
+        # Handle timeout as None
+        timeout = timeout or Duration()
+        # Call cpp implementation
+        transform_str = self._impl.lookup_transform(
+            target_frame,
+            serialize_message(target_time if isinstance(target_time, TimeMsg) else Time.to_msg(target_time)),
+            source_frame,
+            serialize_message(source_time if isinstance(source_time, TimeMsg) else Time.to_msg(source_time)),
+            fixed_frame: str,
             serialize_message(timeout if isinstance(timeout, DurationMsg) else Duration.to_msg(timeout)),
         )
         return deserialize_message(transform_str, TransformStamped)
